@@ -1,0 +1,71 @@
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: atscale-engine
+  namespace: {{ .Release.Namespace | default "atscale" }}
+  annotations:
+    konghq.com/strip-path: "true"
+  {{- with index .Values "atscale" "atscale-engine" "ingress" "annotations" }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: kong
+  {{- end }}
+  {{- if or (and .Values.global.atscale.tls.tlsCrt .Values.global.atscale.tls.tlsKey) .Values.global.atscale.tls.existingSecret }}
+  tls:
+  - secretName: {{ .Values.global.atscale.tls.existingSecret | default "default-certificate" }}
+    hosts:
+      - {{ .Values.global.ingressDomain }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.global.ingressDomain }}
+    http:
+      paths:
+      - path: /engine
+        pathType: ImplementationSpecific
+        backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: {{ .Release.Name }}-atscale-engine
+            port:
+              number: {{ index .Values "atscale" "atscale-engine" "service" "ports" "http" }}
+          {{- else }}
+          serviceName: {{ .Release.Name }}-atscale-engine
+          servicePort: {{  index .Values "atscale" "atscale-engine" "service" "ports" "http" }}
+          {{- end }}
+---
+apiVersion: configuration.konghq.com/v1beta1
+kind: TCPIngress
+metadata:
+  name: engine-thrift
+  namespace: {{ .Release.Namespace | default "atscale" }}
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+    - port: {{ index .Values "atscale" "atscale-engine" "service" "ports" "thrift" }}
+      backend:
+        serviceName: {{ .Release.Name }}-atscale-engine
+        servicePort: {{ index .Values "atscale" "atscale-engine" "service" "ports" "thrift" }}
+---
+apiVersion: configuration.konghq.com/v1beta1
+kind: TCPIngress
+metadata:
+  name: engine-postgres
+  namespace: {{ .Release.Namespace | default "atscale" }}
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+    - port: {{ index .Values "atscale" "atscale-engine" "service" "ports" "pg" }}
+      backend:
+        serviceName: {{ .Release.Name }}-atscale-engine
+        servicePort: {{ index .Values "atscale" "atscale-engine" "service" "ports" "pg" }}
+---

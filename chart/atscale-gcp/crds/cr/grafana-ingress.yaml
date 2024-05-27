@@ -1,0 +1,42 @@
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: {{ .Release.Namespace | default "atscale" }}
+  labels:
+    {{- include "atscale.labels" . | nindent 4 }}
+  {{- with .Values.atscale.grafana.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: kong
+  {{- if or (and .Values.global.atscale.tls.tlsCrt .Values.global.atscale.tls.tlsKey) .Values.global.atscale.tls.existingSecret }}
+  tls:
+  - secretName: {{ .Values.global.atscale.tls.existingSecret | default "default-certificate" }}
+    hosts:
+      - {{ .Values.global.ingressDomain }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.global.ingressDomain }}
+    http:
+      paths:
+      - path: /monitoring
+        pathType: ImplementationSpecific
+        backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: {{ .Values.atscale.grafana.fullnameOverride }}
+            port:
+              number: {{ .Values.atscale.grafana.service.ports.grafana }}
+          {{- else }}
+          serviceName: {{ .Values.atscale.grafana.fullnameOverride }}
+          servicePort: {{ .Values.atscale.grafana.service.ports.grafana }}
+          {{- end }}
+---

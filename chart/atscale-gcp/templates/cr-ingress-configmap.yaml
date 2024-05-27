@@ -1,0 +1,13 @@
+# https://kubernetes.io/docs/concepts/configuration/configmap/
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cr-ingress-configmap
+  namespace: {{ .Release.Namespace | default "atscale" }}
+data:
+{{- range $path, $_ :=  .Files.Glob  "crds/cr/**.yaml" }}
+  {{ base $path | nindent 2}}: |-
+    {{- tpl ($.Files.Get $path) $ | nindent 4 }}
+{{- end }}
+---
+

@@ -1,0 +1,21 @@
+properties:
+  testerImage:
+    type: string
+    default: $REGISTRY/tests/tester:$TAG
+    x-google-property:
+      type: IMAGE
+  global.ingressDomain:
+    type: string
+    default: "local.localhost"
+    x-google-marketplace:
+      type: STRING
+  global.atscale.tls.tlsCrt:
+    type: string
+    default: $TLSCRT
+    x-google-marketplace:
+      type: STRING
+  global.atscale.tls.tlsKey:
+    type: string
+    default: $TLSKEY
+    x-google-marketplace:
+      type: STRING

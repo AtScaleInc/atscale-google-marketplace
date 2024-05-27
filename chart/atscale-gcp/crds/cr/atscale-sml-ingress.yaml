@@ -1,0 +1,42 @@
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: atscale-sml
+  namespace: {{ .Release.Namespace | default "atscale" }}
+  {{- with index .Values "atscale" "atscale-sml" "ingress" "annotations" }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: kong
+  {{- end }}
+  {{- if or (and .Values.global.atscale.tls.tlsCrt .Values.global.atscale.tls.tlsKey) .Values.global.atscale.tls.existingSecret }}
+  tls:
+    - secretName: {{ .Values.global.atscale.tls.existingSecret | default "default-certificate" }}
+      hosts:
+        - {{ .Values.global.ingressDomain }}
+  {{- end }}
+  rules:
+  - host: {{ .Values.global.ingressDomain }}
+    http:
+      paths:
+      - path: /
+        pathType: ImplementationSpecific
+        backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: {{ .Release.Name }}-atscale-sml
+            port:
+              number: {{ index .Values "atscale" "atscale-sml" "service" "httpPort" }}
+          {{- else }}
+          serviceName: {{ .Release.Name }}-atscale-sml
+          servicePort: {{ index .Values "atscale" "atscale-sml" "service" "httpPort" }}
+          {{- end }}
+---

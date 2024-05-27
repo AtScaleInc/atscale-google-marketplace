@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: crds-configmap
+  namespace: {{ .Release.Namespace | default "atscale" }}
+data:
+  custom-resource-definitions.yaml: |-
+    {{- .Files.Get "crds/custom-resource-definitions.yaml" | nindent 4 }}

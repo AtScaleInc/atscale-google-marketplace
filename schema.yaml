@@ -1,0 +1,280 @@
+required:
+- name
+- namespace
+- global.ingressDomain
+- global.atscale.tls.tlsCrt
+- global.atscale.tls.tlsKey
+
+x-google-marketplace:
+  schemaVersion: v2
+
+  applicationApiVersion: v1beta1
+  publishedVersion: '$TAG'
+  publishedVersionMetadata:
+    releaseNote: >-
+      Atscale Release $TAG
+
+  clusterConstraints:
+    resources:
+    - replicas: 3
+      requests:
+        cpu: 8000m
+        memory: 32768Mi
+      affinity:
+        simpleNodeAffinity:
+          type: REQUIRE_ONE_NODE_PER_REPLICA
+
+  deployerServiceAccount:
+    description: >
+      Creates app resources, the application CRD, verifies CRDs for kong.
+    roles:
+    - type: ClusterRole
+      rulesType: CUSTOM
+      rules:
+      - apiGroups: ['apiextensions.k8s.io']
+        resources: ['customresourcedefinitions']
+        verbs: ['*']
+    - type: ClusterRole
+      rulesType: CUSTOM
+      rules:
+      - apiGroups: ['admissionregistration.k8s.io', 'rbac.authorization.k8s.io', 'configuration.konghq.com']
+        resources: ['clusterroles','clusterrolebindings', 'kongclusterplugins', 'validatingwebhookconfigurations']
+        verbs: ['*']
+
+  images:
+    atscale-engine:
+      properties:
+        atscale.atscale-engine.image.repository:
+          type: REPO_WITH_REGISTRY
+        atscale.atscale-engine.image.tag:
+          type: TAG
+    atscale-sml:
+      properties:
+        atscale.atscale-sml.image.repository:
+          type: REPO_WITH_REGISTRY
+        atscale.atscale-sml.image.tag:
+          type: TAG
+    atscale-api:
+      properties:
+        atscale.atscale-api.image.repository:
+          type: REPO_WITH_REGISTRY
+        atscale.atscale-api.image.tag:
+          type: TAG
+    atscale-entitlement:
+      properties:
+        atscale.atscale-entitlement.image.repository:
+          type: REPO_WITH_REGISTRY
+        atscale.atscale-entitlement.image.tag:
+          type: TAG
+    kong:
+      properties:
+        atscale.kongproxy.image.repository:
+          type: REPO_WITH_REGISTRY
+        atscale.kongproxy.image.tag:
+          type: TAG
+    kong-ingress-controller:
+      properties:
+        atscale.kongproxy.ingressController.image.repository:
+          type: REPO_WITH_REGISTRY
+        atscale.kongproxy.ingressController.image.tag:
+          type: TAG
+    postgres:
+      properties:
+        atscale.postgres.postgresql.image.registry:
+          type: REGISTRY
+        atscale.postgres.postgresql.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.postgres.postgresql.image.tag:
+          type: TAG
+    pgpool:
+      properties:
+        atscale.postgres.pgpool.image.registry:
+          type: REGISTRY
+        atscale.postgres.pgpool.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.postgres.pgpool.image.tag:
+          type: TAG
+    postgres-exporter:
+      properties:
+        atscale.postgres.metrics.image.registry:
+          type: REGISTRY
+        atscale.postgres.metrics.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.postgres.metrics.image.tag:
+          type: TAG
+    redis:
+      properties:
+        atscale.redis.image.registry:
+          type: REGISTRY
+        atscale.redis.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.redis.image.tag:
+          type: TAG
+    keycloak:
+      properties:
+        atscale.keycloak.image.registry:
+          type: REGISTRY
+        atscale.keycloak.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.keycloak.image.tag:
+          type: TAG
+    git:
+      properties:
+        atscale.git.image.registry:
+          type: REGISTRY
+        atscale.git.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.git.image.tag:
+          type: TAG
+    objectstorage:
+      properties:
+        atscale.objectstorage.image.registry:
+          type: REGISTRY
+        atscale.objectstorage.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.objectstorage.image.tag:
+          type: TAG
+    objectstorageclient:
+      properties:
+        atscale.objectstorage.clientImage.registry:
+          type: REGISTRY
+        atscale.objectstorage.clientImage.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.objectstorage.clientImage.tag:
+          type: TAG
+    objectstoragejob:
+      properties:
+        objectstoragejob.image.registry:
+          type: REGISTRY
+        objectstoragejob.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        objectstoragejob.image.tag:
+          type: TAG
+    grafana:
+      properties:
+        atscale.grafana.image.registry:
+          type: REGISTRY
+        atscale.grafana.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.grafana.image.tag:
+          type: TAG
+    promtail:
+      properties:
+        atscale.promtail.image.registry:
+          type: REGISTRY
+        atscale.promtail.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.promtail.image.tag:
+          type: TAG
+    telemetry:
+      properties:
+        atscale.telemetry.image.repository:
+          type: REPO_WITH_REGISTRY
+        atscale.telemetry.image.tag:
+          type: TAG
+    tempo:
+      properties:
+        atscale.tempo.tempo.image.registry:
+          type: REGISTRY
+        atscale.tempo.tempo.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.tempo.tempo.image.tag:
+          type: TAG
+    tempo-query:
+      properties:
+        atscale.tempo.queryFrontend.query.image.registry:
+          type: REGISTRY
+        atscale.tempo.queryFrontend.query.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.tempo.queryFrontend.query.image.tag:
+          type: TAG
+    loki:
+      properties:
+        atscale.loki.loki.image.registry:
+          type: REGISTRY
+        atscale.loki.loki.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.loki.loki.image.tag:
+          type: TAG
+    loki-gateway:
+      properties:
+        atscale.loki.gateway.image.registry:
+          type: REGISTRY
+        atscale.loki.gateway.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.loki.gateway.image.tag:
+          type: TAG
+    memcached:
+      properties:
+        atscale.loki.memcachedindexwrites.image.registry:
+          type: REGISTRY
+        atscale.loki.memcachedindexwrites.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.loki.memcachedindexwrites.image.tag:
+          type: TAG
+    mimir:
+      properties:
+        atscale.mimir.mimir.image.registry:
+          type: REGISTRY
+        atscale.mimir.mimir.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.mimir.mimir.image.tag:
+          type: TAG
+    mimir-gateway:
+      properties:
+        atscale.mimir.gateway.image.registry:
+          type: REGISTRY
+        atscale.mimir.gateway.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        atscale.mimir.gateway.image.tag:
+          type: TAG
+
+properties:
+  name:
+    type: string
+    x-google-marketplace:
+      type: NAME
+  namespace:
+    type: string
+    x-google-marketplace:
+      type: NAMESPACE
+  global.ingressDomain:
+    type: string
+    x-google-marketplace:
+      type: STRING
+  global.atscale.tls.tlsCrt:
+    type: string
+    x-google-marketplace:
+      type: STRING
+  global.atscale.tls.tlsKey:
+    type: string
+    x-google-marketplace:
+      type: STRING
+  global.atscale.tls.existingSecret:
+    type: string
+    x-google-marketplace:
+      type: STRING
+  CRDJobServiceAccount:
+    type: string
+    title: CRD deployer Service Account
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: Service account CRD deployer Job. Creates all ingresses and kongs CRDs.
+        roles:
+        - type: ClusterRole
+          rulesType: CUSTOM
+          rules:
+            - apiGroups: ["networking.k8s.io", "configuration.konghq.com"]
+              resources: ["ingresses", "tcpingresses",  "kongclusterplugins"]
+              verbs: ["*"]
+            - apiGroups: ["apiextensions.k8s.io"]
+              resources: ["customresourcedefinitions"]
+              verbs: ["*"]
+            - apiGroups: ["app.k8s.io"]
+              resources: ["applications"]
+              verbs: ["get","list","patch"]
+  deployer.image:
+    type: string
+    x-google-marketplace:
+      type: DEPLOYER_IMAGE

@@ -1,0 +1,151 @@
+{{- if not .Values.atscale.objectstorage.provisioning.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations: {}
+  generation: 1
+  labels: {}
+  name: minio-provisioning
+  namespace: {{ .Release.Namespace | default "atscale" }}
+spec:
+  backoffLimit: 6
+  completionMode: NonIndexed
+  parallelism: 1
+  suspend: false
+  template:
+    metadata:
+      labels:
+        job-name: minio-provisioning
+    spec:
+      containers:
+      - command:
+        - /bin/bash
+        - -c
+        - |-
+          set -e; echo "Start Minio provisioning";
+          function attachPolicy() {
+            local tmp=$(mc admin $1 info provisioning $2 | sed -n -e 's/^Policy.*: \(.*\)$/\1/p');
+            IFS=',' read -r -a CURRENT_POLICIES <<< "$tmp";
+            if [[ ! "${CURRENT_POLICIES[*]}" =~ "$3" ]]; then
+              mc admin policy attach provisioning $3 --$1=$2;
+            fi;
+          };
+          function detachDanglingPolicies() {
+            local tmp=$(mc admin $1 info provisioning $2 | sed -n -e 's/^Policy.*: \(.*\)$/\1/p');
+            IFS=',' read -r -a CURRENT_POLICIES <<< "$tmp";
+            IFS=',' read -r -a DESIRED_POLICIES <<< "$3";
+            for current in "${CURRENT_POLICIES[@]}"; do
+              if [[ ! "${DESIRED_POLICIES[*]}" =~ "${current}" ]]; then
+                mc admin policy detach provisioning $current --$1=$2;
+              fi;
+            done;
+          }
+          function addUsersFromFile() {
+            local username=$(grep -oP '^username=\K.+' $1);
+            local password=$(grep -oP '^password=\K.+' $1);
+            local disabled=$(grep -oP '^disabled=\K.+' $1);
+            local policies_list=$(grep -oP '^policies=\K.+' $1);
+            local set_policies=$(grep -oP '^setPolicies=\K.+' $1);
+
+            mc admin user add provisioning "${username}" "${password}";
+
+            IFS=',' read -r -a POLICIES <<< "${policies_list}";
+            for policy in "${POLICIES[@]}"; do
+              attachPolicy user "${username}" "${policy}";
+            done;
+            if [ "${set_policies}" == "true" ]; then
+              detachDanglingPolicies user "${username}" "${policies_list}";
+            fi;
+
+            local user_status="enable";
+            if [[ "${disabled}" != "" && "${disabled,,}" == "true" ]]; then
+              user_status="disable";
+            fi;
+
+            mc admin user "${user_status}" provisioning "${username}";
+          }; mc alias set provisioning $MINIO_SCHEME://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD;
+          mc admin service restart provisioning; while read -d '' configFile; do
+            addUsersFromFile "${configFile}";
+          done < <(find "/opt/bitnami/minio/users/" -type l -not -name '..data' -print0); mc mb provisioning/mimir --ignore-existing  ; mc mb provisioning/loki-chunks --ignore-existing  ; mc mb provisioning/loki-admin --ignore-existing  ; mc mb provisioning/tempo --ignore-existing  ;
+          echo "End Minio provisioning";
+        env:
+        - name: MINIO_SCHEME
+          value: http
+        - name: MINIO_ROOT_USER
+          valueFrom:
+            secretKeyRef:
+              key: root-user
+              name: minio-secret
+        - name: MINIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-password
+              name: minio-secret
+        image: "{{ .Values.atscale.objectstorage.image.registry }}/{{ .Values.atscale.objectstorage.image.repository }}:{{ .Values.atscale.objectstorage.image.tag }}"
+        imagePullPolicy: {{ .Values.objectstoragejob.image.pullPolicy }}
+        name: minio
+        resources:
+          requests:
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          seccompProfile:
+            type: RuntimeDefault
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/bitnami/minio/users/0/
+          name: users-secret-0
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - command:
+        - /bin/bash
+        - -c
+        - |-
+          set -e;
+          echo "Waiting for Minio";
+          wait-for-port \
+            --host=minio \
+            --state=inuse \
+            --timeout={{ .Values.objectstoragejob.job.waitTimeout }} \
+            9000;
+          echo "Minio is available";
+        image: "{{ .Values.atscale.objectstorage.image.registry }}/{{ .Values.atscale.objectstorage.image.repository }}:{{ .Values.atscale.objectstorage.image.tag }}"
+        imagePullPolicy: {{ .Values.objectstoragejob.image.pullPolicy }}
+        name: wait-for-available-minio
+        resources:
+          requests:
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+          runAsUser: 1001
+          seccompProfile:
+            type: RuntimeDefault
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      restartPolicy: OnFailure
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1001
+      serviceAccount: {{ .Values.objectstoragejob.serviceAccount.name }}
+      serviceAccountName: {{ .Values.objectstoragejob.serviceAccount.name }}
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - name: users-secret-0
+        secret:
+          defaultMode: 420
+          secretName: minio-svc-secret
+{{- end }}

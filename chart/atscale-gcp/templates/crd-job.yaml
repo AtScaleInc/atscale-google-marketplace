@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+  name: crd-create
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+    app.kubernetes.io/component: crd-job
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 0
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      containers:
+      - command:
+        - "/bin/bash"
+        - "-ec"
+        - |
+          for crd in /crds/*;
+            do kubectl apply -f $crd --validate=false;
+          done
+
+          kubectl patch Application/{{ .Release.Name }} --type json --output json -p \
+          '[
+            { "op": "add", "path": "/spec/componentKinds/-",
+              "value": { "group": "configuration.konghq.com/v1",
+                          kind: "KongIngress" } },
+            { "op": "add", "path": "/spec/componentKinds/-",
+              "value": { "group": "configuration.konghq.com/v1",
+                          kind: "KongClusterPlugin" } },
+            { "op": "add", "path": "/spec/componentKinds/-",
+              "value": { "group": "configuration.konghq.com/v1beta1",
+                          kind: "TCPIngress" } },
+           ]'
+           for cr in /crs/*
+             do kubectl apply -f $cr -n {{ .Release.Namespace | default "atscale" }}
+           done
+
+        image: {{ .Values.deployer.image }}
+        imagePullPolicy: Always
+        name: crd-create
+        volumeMounts:
+          - name: crds
+            mountPath: /crds
+          - name: crs
+            mountPath: /crs
+      dnsPolicy: ClusterFirst
+      restartPolicy: Never
+      serviceAccountName: {{ .Values.CRDJobServiceAccount }}
+      volumes:
+        - name: crds
+          configMap:
+            name: crds-configmap
+        - name: crs
+          configMap:
+            name: cr-ingress-configmap

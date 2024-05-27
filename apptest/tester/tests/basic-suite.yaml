@@ -1,0 +1,8 @@
+actions:
+- name: Jenkins service login with correct credentials
+  bashTest:
+    script: |-
+      echo "Sign in" | grep -q 'Sign in'
+    expect:
+      exitCode:
+        equals: 1
