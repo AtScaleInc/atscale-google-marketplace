@@ -25,13 +25,13 @@ spec:
           kubectl patch Application/{{ .Release.Name }} --type json --output json -p \
           '[
             { "op": "add", "path": "/spec/componentKinds/-",
-              "value": { "group": "configuration.konghq.com/v1",
+              "value": { "group": "configuration.konghq.com",
                           kind: "KongIngress" } },
             { "op": "add", "path": "/spec/componentKinds/-",
-              "value": { "group": "configuration.konghq.com/v1",
+              "value": { "group": "configuration.konghq.com",
                           kind: "KongClusterPlugin" } },
             { "op": "add", "path": "/spec/componentKinds/-",
-              "value": { "group": "configuration.konghq.com/v1beta1",
+              "value": { "group": "configuration.konghq.com",
                           kind: "TCPIngress" } },
            ]'
            for cr in /crs/*

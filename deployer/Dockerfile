@@ -30,11 +30,13 @@ RUN cat /tmp/apptest/schema.yaml \
 
 FROM gcr.io/cloud-marketplace-tools/k8s/deployer_helm:0.12.2
 
+RUN rm -rf /opt/kubectl/1.27 && rm -f /opt/kubectl/default
+RUN cp /opt/kubectl/1.29/kubectl /usr/bin/kubectl && ln -s /opt/kubectl/1.29/ /opt/kubectl/default
 COPY --from=build /tmp/schema.yaml /data/schema.yaml
 COPY --from=build /tmp/atscale-gcp.tar.gz /data/chart/
 #COPY --from=build /tmp/test/atscale-gcp.tar.gz /data-test/chart/
 COPY --from=build /tmp/apptest/schema.yaml /data-test/
 
-ENV WAIT_FOR_READY_TIMEOUT 600
-ENV TESTER_TIMEOUT 300
+ENV WAIT_FOR_READY_TIMEOUT 1000
+ENV TESTER_TIMEOUT 1000
 

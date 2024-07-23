@@ -15,10 +15,11 @@ x-google-marketplace:
       Atscale Release $TAG
 
   clusterConstraints:
+    k8sVersion: "<=1.29.5"
     resources:
     - replicas: 3
       requests:
-        cpu: 8000m
+        cpu: 16000m
         memory: 32768Mi
       affinity:
         simpleNodeAffinity:

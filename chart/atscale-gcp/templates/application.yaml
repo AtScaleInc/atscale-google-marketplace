@@ -31,65 +31,71 @@ spec:
       (including native DAX integration for Power BI) and AI powered query orchestration,
       users get unparalleled query performance on live cloud data.
 
-      Contact us directly at GCM@atscale.com for custom pricing!
+      > Contact us directly at **GCM@atscale.com** for custom pricing!
     maintainers:
     - name: Atscale
       url: https://atscale.com
     links:
+    - description: 'Official documentation for AtScale'
+      url: https://documentation.atscale.com/
     notes: |-
       {{- if not .Release.IsUpgrade }}
+      ```yaml
       Thank you for installing {{ .Chart.Name }}
       Your chart version: {{ .Chart.Version }}
       Your release is named {{ .Release.Name }}
-      {{ print "\n" }}
-      AtScale:
-      You can access the AtScale GUI at https://{{ .Values.global.ingressDomain }}/
+      ```
+
+      ## Accessing the Application:
+      ### AtScale:
+      You can access the AtScale GUI at [https://{{ .Values.global.ingressDomain }}/](https://{{ .Values.global.ingressDomain }}/)
+
       You can use the below commands to get the credentials:
+      ```bash
+      echo "Username: $(kubectl get secret --namespace {{ .Release.Namespace }} keycloak-secret -o jsonpath="{.data.KC_ATSCALE_ADMIN_USERNAME}" | base64 -d)"
+      echo "Password: $(kubectl get secret --namespace {{ .Release.Namespace }} keycloak-secret -o jsonpath="{.data.KC_ATSCALE_ADMIN_PASSWORD}" | base64 -d)"
+      ```
+      ### Keycloak:
+      You can access the KeyCloak administrative panel at [https://{{ .Values.global.ingressDomain }}/auth](https://{{ .Values.global.ingressDomain }}/auth)
 
-          Username: kubectl get secret --namespace {{ .Release.Namespace }} keycloak-secret -o jsonpath="{.data.KC_ATSCALE_ADMIN_USERNAME}" | base64 -d
-          Password: kubectl get secret --namespace {{ .Release.Namespace }} keycloak-secret -o jsonpath="{.data.KC_ATSCALE_ADMIN_PASSWORD}" | base64 -d
-      {{ print "\n" }}
-      Keycloak:
-        You can access the KeyCloak administrative panel at https://{{ .Values.global.ingressDomain }}/auth
-        You can use the below commands to get the credentials:
-          Username: kubectl get secret --namespace {{ .Release.Namespace }} keycloak-secret -o jsonpath="{.data.KEYCLOAK_ADMIN}" | base64 -d
-          Password: kubectl get secret --namespace {{ .Release.Namespace }} keycloak-secret -o jsonpath="{.data.KEYCLOAK_ADMIN_PASSWORD}" | base64 -d
-      {{ print "\n" }}
-      Minio:
-        You can access the Minio dashboard at https://{{ .Values.global.ingressDomain }}/minio
-        You can use the below commands to get the credentials:
+      You can use the below commands to get the credentials:
+      ```bash
+      echo "Username: $(kubectl get secret --namespace {{ .Release.Namespace }} keycloak-secret -o jsonpath="{.data.KEYCLOAK_ADMIN}" | base64 -d)"
+      echo "Password: $(kubectl get secret --namespace {{ .Release.Namespace }} keycloak-secret -o jsonpath="{.data.KEYCLOAK_ADMIN_PASSWORD}" | base64 -d)"
+      ```
+      ### Minio:
+      You can access the Minio dashboard at [https://{{ .Values.global.ingressDomain }}/minio](https://{{ .Values.global.ingressDomain }}/minio)
 
-          Username: kubectl get secret --namespace {{ .Release.Namespace }} minio-secret -o jsonpath="{.data.root-user}" | base64 -d
-          Password: kubectl get secret --namespace {{ .Release.Namespace }} minio-secret -o jsonpath="{.data.root-password}" | base64 -d
-      {{ print "\n" }}
-      Grafana:
-        You can access the AtScale Monitoring dashboard at https://{{ .Values.global.ingressDomain }}/monitoring
-        You can use the below commands to get the credentials:
+      You can use the below commands to get the credentials:
+      ```bash
+      echo "Username: $(kubectl get secret --namespace {{ .Release.Namespace }} minio-secret -o jsonpath="{.data.root-user}" | base64 -d)"
+      echo "Password: $(kubectl get secret --namespace {{ .Release.Namespace }} minio-secret -o jsonpath="{.data.root-password}" | base64 -d)"
+      ```
+      ### Grafana:
+      You can access the AtScale Monitoring dashboard at [https://{{ .Values.global.ingressDomain }}/monitoring](https://{{ .Values.global.ingressDomain }}/monitoring)
 
-          Username: kubectl get secret --namespace {{ .Release.Namespace }} grafana-admin -o jsonpath="{.data.admin}" | base64 -d
-          Password: kubectl get secret --namespace {{ .Release.Namespace }} grafana-admin -o jsonpath="{.data.password}" | base64 -d
-      {{ print "\n" }}
-      Gitea:
-        You can access Gitea at https://{{ .Values.global.ingressDomain }}/gitea
-        You can use the below commands to get the credentials:
-
-          Username: {{ .Values.atscale.git.externalDatabase.user }}
-          Password: kubectl get secret --namespace atscale atscale-git -o jsonpath="{.data.admin-password}" | base64 -d
-
-      LoadBalancer Ports:
-        AtScale PG Connector: 15432
-        AtScale Thrift Connector: 11111
-        LoadBalancer (Kong): 443
-
-      Internal Service Ports:
-        Kong Metrics: {{ .Values.atscale.kongproxy.kongStatusSvc.port }}
-        Loki: {{ .Values.atscale.telemetry.ports.loki.servicePort }}
-        Otel GRPC: 4317
-        Otel Http: 4318
-        Otel Zipkin: 9411
-        Postgres: {{ .Values.atscale.postgres.service.ports.postgresql }}
-        Redis: {{ .Values.atscale.redis.master.service.ports.redis }}
-        Tempo Distributor GRPC: 4317
+      You can use the below commands to get the credentials:
+      ```bash
+      echo "Username: $(kubectl get secret --namespace {{ .Release.Namespace }} grafana-admin -o jsonpath="{.data.admin}" | base64 -d)"
+      echo "Password: $(kubectl get secret --namespace {{ .Release.Namespace }} grafana-admin -o jsonpath="{.data.password}" | base64 -d)"
+      ```
+      ### LoadBalancer Ports:
+      ```yaml
+      AtScale PG Connector: 15432
+      AtScale Thrift Connector: 11111
+      LoadBalancer (Kong): 443
+      ```
+      ### Internal Service Ports:
+      ```yaml
+      Kong Metrics: {{ .Values.atscale.kongproxy.kongStatusSvc.port }}
+      Loki: {{ .Values.atscale.telemetry.ports.loki.servicePort }}
+      Otel GRPC: 4317
+      Otel Http: 4318
+      Otel Zipkin: 9411
+      Postgres: {{ .Values.atscale.postgres.service.ports.postgresql }}
+      Redis: {{ .Values.atscale.redis.master.service.ports.redis }}
+      Tempo Distributor GRPC: 4317
+      ```
       {{- end }}
       {{- if .Release.IsUpgrade }}
       Your AtScale installation has been successfully updated to {{ .Chart.Version }}
@@ -129,5 +135,3 @@ spec:
       kind: Role
     - group: 'rbac.authorization.k8s.io/v1'
       kind: RoleBinding
-    - group: 'configuration.konghq.com'
-      kind: KongClusterPlugin

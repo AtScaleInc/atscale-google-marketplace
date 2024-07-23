@@ -22,7 +22,7 @@ deployer:
 
 atscale:
   atscale-engine:
-    #imagePullSecrets:
+    # imagePullSecrets:
     #  - name: gcp-auth
     image:
       pullPolicy: IfNotPresent
@@ -30,7 +30,7 @@ atscale:
       enabled: false
 
   atscale-sml:
-    #imagePullSecrets:
+    # imagePullSecrets:
     #  - name: gcp-auth
     image:
       pullPolicy: IfNotPresent
@@ -38,7 +38,7 @@ atscale:
       enabled: false
 
   atscale-api:
-    #imagePullSecrets:
+    # imagePullSecrets:
     #  - name: gcp-auth
     image:
       pullPolicy: IfNotPresent
@@ -46,7 +46,7 @@ atscale:
       enabled: false
 
   atscale-entitlement:
-    #imagePullSecrets:
+    # imagePullSecrets:
     #  - name: gcp-auth
     image:
       pullPolicy: IfNotPresent
@@ -87,8 +87,8 @@ atscale:
     image:
       pullPolicy: IfNotPresent
     service:
-       ports:
-         http: 80
+      ports:
+        http: 80
 
     customIngress:
       enabled: false
@@ -114,7 +114,7 @@ atscale:
     image:
       pullPolicy: IfNotPresent
         # pullSecrets:
-        #- "gcp-auth"
+        # - "gcp-auth"
     customIngress:
       enabled: false
     ingress:
@@ -140,7 +140,7 @@ atscale:
         hostPath:
           path: /var/log/pods
       - name: run
-        emptyDir: { }
+        emptyDir: {}
 
   telemetry:
     image:

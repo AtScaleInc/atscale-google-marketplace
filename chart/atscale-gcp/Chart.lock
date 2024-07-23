@@ -1,6 +1,6 @@
 dependencies:
 - name: atscale
   repository: oci://registry-1.docker.io/atscaleinc
-  version: 2024.1.1
-digest: sha256:51088e2fa1fc399f839e98b73fff7592120ca5ee90937f348a7b0df1ac315c22
-generated: "2024-05-27T13:03:45.223929824+03:00"
+  version: 2024.2.0
+digest: sha256:ede00057b542aecc6de44a281fc3394d65935e3573cce074ce09938af75d1296
+generated: "2024-07-22T10:26:32.670036983+03:00"
