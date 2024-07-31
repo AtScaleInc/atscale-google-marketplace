@@ -32,11 +32,11 @@ spec:
         backend:
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           service:
-            name: atscale-sml
+            name: {{ .Release.Namespace }}-atscale-sml
             port:
               number: {{ index .Values "atscale" "atscale-sml" "service" "httpPort" }}
           {{- else }}
-          serviceName: atscale-sml
+          serviceName: {{ .Release.Namespace }}-atscale-sml
           servicePort: {{ index .Values "atscale" "atscale-sml" "service" "httpPort" }}
           {{- end }}
 ---

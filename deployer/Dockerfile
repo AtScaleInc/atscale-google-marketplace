@@ -37,6 +37,6 @@ COPY --from=build /tmp/atscale-gcp.tar.gz /data/chart/
 #COPY --from=build /tmp/test/atscale-gcp.tar.gz /data-test/chart/
 COPY --from=build /tmp/apptest/schema.yaml /data-test/
 
-ENV WAIT_FOR_READY_TIMEOUT 1000
-ENV TESTER_TIMEOUT 1000
+ENV WAIT_FOR_READY_TIMEOUT 1300
+ENV TESTER_TIMEOUT 300
 

@@ -7,11 +7,11 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: atscale-api
+  name: atscale-api-public
   namespace: {{ .Release.Namespace | default "atscale" }}
   {{- with index .Values "atscale" "atscale-api" "ingress" "annotations" }}
   annotations:
-    konghq.com/strip-path: "true"
+    konghq.com/rewrite: /public/$1
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
@@ -28,16 +28,17 @@ spec:
   - host: {{ .Values.global.ingressDomain }}
     http:
       paths:
-      - path: /api
+      - path: /v1
         pathType: ImplementationSpecific
         backend:
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           service:
-            name: {{ .Release.Namespace }}-atscale-api
+            name: {{ .Release.Namespace }}-atscale-api-public
             port:
               number: {{ index .Values "atscale" "atscale-api" "service" "httpPort" }}
           {{- else }}
-          serviceName: {{ .Release.Namespace }}-atscale-api
+          serviceName: {{ .Release.Namespace }}-atscale-api-public
           servicePort: {{ index .Values "atscale" "atscale-api" "service" "httpPort" }}
           {{- end }}
 ---
+

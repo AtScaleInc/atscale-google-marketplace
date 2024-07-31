@@ -9,3 +9,5 @@ metadata:
 config:
   per_consumer: false
 plugin: prometheus
+
+---
