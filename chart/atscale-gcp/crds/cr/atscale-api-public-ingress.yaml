@@ -33,11 +33,11 @@ spec:
         backend:
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           service:
-            name: {{ .Release.Namespace }}-atscale-api-public
+            name: {{ .Release.Name }}-atscale-api-public
             port:
               number: {{ index .Values "atscale" "atscale-api" "service" "httpPort" }}
           {{- else }}
-          serviceName: {{ .Release.Namespace }}-atscale-api-public
+          serviceName: {{ .Release.Name }}-atscale-api-public
           servicePort: {{ index .Values "atscale" "atscale-api" "service" "httpPort" }}
           {{- end }}
 ---

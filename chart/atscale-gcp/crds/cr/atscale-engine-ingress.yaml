@@ -33,11 +33,11 @@ spec:
         backend:
           {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
           service:
-            name: {{ .Release.Namespace }}-atscale-engine
+            name: {{ .Release.Name }}-atscale-engine
             port:
               number: {{ index .Values "atscale" "atscale-engine" "service" "ports" "http" }}
           {{- else }}
-          serviceName: {{ .Release.Namespace }}-atscale-engine
+          serviceName: {{ .Release.Name }}-atscale-engine
           servicePort: {{  index .Values "atscale" "atscale-engine" "service" "ports" "http" }}
           {{- end }}
 ---
@@ -52,7 +52,7 @@ spec:
   rules:
     - port: {{ index .Values "atscale" "atscale-engine" "service" "ports" "thrift" }}
       backend:
-        serviceName: {{ .Release.Namespace }}-atscale-engine
+        serviceName: {{ .Release.Name }}-atscale-engine
         servicePort: {{ index .Values "atscale" "atscale-engine" "service" "ports" "thrift" }}
 ---
 apiVersion: configuration.konghq.com/v1beta1
@@ -66,6 +66,6 @@ spec:
   rules:
     - port: {{ index .Values "atscale" "atscale-engine" "service" "ports" "pg" }}
       backend:
-        serviceName: {{ .Release.Namespace }}-atscale-engine
+        serviceName: {{ .Release.Name }}-atscale-engine
         servicePort: {{ index .Values "atscale" "atscale-engine" "service" "ports" "pg" }}
 ---
