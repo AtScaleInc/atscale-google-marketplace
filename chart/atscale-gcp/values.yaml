@@ -14,7 +14,7 @@ objectstoragejob:
   image:
     registry: "marketplace.gcr.io"
     repository: "atscale-public/atscale/objectstoragejob"
-    tag: "2024.2.1"
+    tag: "2024.2.2"
     pullPolicy: IfNotPresent
 
 deployer:
@@ -26,7 +26,7 @@ atscale:
     #  - name: gcp-auth
     image:
       repository: "marketplace.gcr.io/atscale-public/atscale/atscale-engine"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
     ingress:
       enabled: false
@@ -36,7 +36,7 @@ atscale:
     #  - name: gcp-auth
     image:
       repository: "marketplace.gcr.io/atscale-public/atscale/atscale-sml"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
     ingress:
       enabled: false
@@ -46,7 +46,7 @@ atscale:
     #  - name: gcp-auth
     image:
       repository: "marketplace.gcr.io/atscale-public/atscale/atscale-api"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
     ingress:
       enabled: false
@@ -58,7 +58,7 @@ atscale:
     #  - name: gcp-auth
     image:
       repository: "marketplace.gcr.io/atscale-public/atscale/atscale-entitlement"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
     ingress:
       enabled: false
@@ -68,47 +68,47 @@ atscale:
       enabled: false
     image:
       repository: "marketplace.gcr.io/atscale-public/atscale/kong"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
     customIngress:
       enabled: false
     ingressController:
       image:
         repository: marketplace.gcr.io/atscale-public/atscale/kong-ingress-controller
-        tag: "2024.2.1"
+        tag: "2024.2.2"
 
   postgres:
     postgresql:
       image:
         registry: "marketplace.gcr.io"
         repository: "atscale-public/atscale/postgres"
-        tag: "2024.2.1"
+        tag: "2024.2.2"
         pullPolicy: IfNotPresent
     pgpool:
       image:
         registry: "marketplace.gcr.io"
         repository: "atscale-public/atscale/pgpool"
-        tag: "2024.2.1"
+        tag: "2024.2.2"
         pullPolicy: IfNotPresent
     metrics:
       image:
         registry: "marketplace.gcr.io"
         repository: "atscale-public/atscale/pgpool"
-        tag: "2024.2.1"
+        tag: "2024.2.2"
         pullPolicy: IfNotPresent
 
   redis:
     image:
       registry: "marketplace.gcr.io"
       repository: "atscale-public/atscale/redis"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
 
   keycloak:
     image:
       registry: "marketplace.gcr.io"
       repository: "atscale-public/atscale/keycloak"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
     customIngress:
       enabled: false
@@ -118,7 +118,7 @@ atscale:
     image:
       registry: "marketplace.gcr.io"
       repository: "atscale-public/atscale/keycloak"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
     service:
       ports:
@@ -136,7 +136,7 @@ atscale:
     image:
       registry: "marketplace.gcr.io"
       repository: "atscale-public/atscale/objectstorage"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
     provisioning:
       enabled: false
@@ -151,7 +151,7 @@ atscale:
     image:
       registry: "marketplace.gcr.io"
       repository: "atscale-public/atscale/grafana"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
         # pullSecrets:
         # - "gcp-auth"
@@ -168,7 +168,7 @@ atscale:
     image:
       registry: "marketplace.gcr.io"
       repository: "atscale-public/atscale/promtail"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
 
     defaultVolumeMounts:
@@ -188,7 +188,7 @@ atscale:
   telemetry:
     image:
       repository: "marketplace.gcr.io/atscale-public/atscale/telemetry"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
       pullPolicy: IfNotPresent
 
   tempo:
@@ -196,7 +196,7 @@ atscale:
       image:
         registry: "marketplace.gcr.io"
         repository: "atscale-public/atscale/tempo"
-        tag: "2024.2.1"
+        tag: "2024.2.2"
         pullPolicy: IfNotPresent
     memcached:
       enabled: false
@@ -204,20 +204,20 @@ atscale:
       query:
         registry: "marketplace.gcr.io"
         repository: "atscale-public/atscale/tempo-query"
-        tag: "2024.2.1"
+        tag: "2024.2.2"
 
   loki:
     loki:
       image:
         registry: "marketplace.gcr.io"
         repository: "atscale-public/atscale/loki"
-        tag: "2024.2.1"
+        tag: "2024.2.2"
         pullPolicy: IfNotPresent
     gateway:
       image:
         registry: "marketplace.gcr.io"
         repository: "atscale-public/atscale/loki-gateway"
-        tag: "2024.2.1"
+        tag: "2024.2.2"
 
 
   mimir:
@@ -225,9 +225,9 @@ atscale:
       image:
         registry: "marketplace.gcr.io"
         repository: "atscale-public/atscale/mimir"
-        tag: "2024.2.1"
+        tag: "2024.2.2"
         pullPolicy: IfNotPresent
     gateway:
       registry: "marketplace.gcr.io"
       repository: "atscale-public/atscale/mimir-gateway"
-      tag: "2024.2.1"
+      tag: "2024.2.2"
