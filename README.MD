@@ -89,7 +89,7 @@ helm template atscale chart/atscale-gcp \
 --set global.atscale.tls.tlsCRT="${TLSCRT}" \
 --set global.atscale.tls.tlsKEY="${TLSKEY}" \
 --set atscale.atscale-engine.image.repository="${REGISTRY}/${REPOSITORY}/atscale-engine" \
---set atscale.atscale-engine.image.tag="${TAG} \
+--set atscale.atscale-engine.image.tag="${TAG}" \
 --set atscale.atscale-sml.image.repository="${REGISTRY}/${REPOSITORY}/atscale-sml" \
 --set atscale.atscale-sml.image.tag="${TAG}" \
 --set atscale.atscale-api.image.repository="${REGISTRY}/${REPOSITORY}/atscale-api" \
@@ -104,7 +104,7 @@ helm template atscale chart/atscale-gcp \
 --set atscale.postgres.postgresql.image.repository="${REPOSITORY}/postgres" \
 --set atscale.postgres.postgresql.image.tag="${TAG}" \
 --set atscale.postgres.pgpool.image.registry="${REGISTRY}" \
---set atscale.postgres.pgpool.image.repository=${REPOSITORY}/pgpool" \
+--set atscale.postgres.pgpool.image.repository="${REPOSITORY}/pgpool" \
 --set atscale.postgres.pgpool.image.tag="${TAG}" \
 --set atscale.postgres.metrics.image.registry="${REGISTRY}" \
 --set atscale.postgres.metrics.image.repository="${REPOSITORY}/postgres-exporter" \
@@ -149,14 +149,14 @@ helm template atscale chart/atscale-gcp \
 --set atscale.loki.gateway.image.tag="${TAG}" \
 --set atscale.loki.memcachedindexwrites.image.registry="${REGISTRY}" \
 --set atscale.loki.memcachedindexwrites.image.repository="${REPOSITORY}/memcached" \
---set atscale.loki.memcachedindexwrites.image.tag="${TAG} \
+--set atscale.loki.memcachedindexwrites.image.tag="${TAG}" \
 --set atscale.mimir.mimir.image.registry="${REGISTRY}" \
 --set atscale.mimir.mimir.image.repository="${REPOSITORY}/mimir" \
 --set atscale.mimir.mimir.image.tag="${TAG}" \
 --set atscale.mimir.gateway.image.registry="${REGISTRY}" \
 --set atscale.mimir.gateway.image.repository="${REPOSITORY}/mimir-gateway" \
 --set atscale.mimir.gateway.image.tag="${TAG}" \
-> atcale_manifest.yaml
+> atscale_manifest.yaml
 ```
 - Create the namespace
 ```shell

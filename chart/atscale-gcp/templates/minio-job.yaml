@@ -20,7 +20,7 @@ spec:
       containers:
       - command:
         - /bin/bash
-        - -c
+        - '-c'
         - |-
           set -e; echo "Start Minio provisioning";
           function attachPolicy() {
@@ -64,9 +64,9 @@ spec:
 
             mc admin user "${user_status}" provisioning "${username}";
           }; mc alias set provisioning $MINIO_SCHEME://minio:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD;
-          mc admin service restart provisioning; while read -d '' configFile; do
+          mc admin service restart provisioning --wait --json; while read -d '' configFile; do
             addUsersFromFile "${configFile}";
-          done < <(find "/opt/bitnami/minio/users/" -type l -not -name '..data' -print0); mc mb provisioning/mimir --ignore-existing  ; mc mb provisioning/loki-chunks --ignore-existing  ; mc mb provisioning/loki-admin --ignore-existing  ; mc mb provisioning/tempo --ignore-existing  ;
+          done < <(find "/opt/bitnami/minio/users/" -type l -not -name '..data' -print0); mc mb provisioning/mimir --ignore-existing  ; mc version suspend provisioning/mimir; mc mb provisioning/loki-chunks --ignore-existing  ; mc version suspend provisioning/loki-chunks; mc mb provisioning/loki-admin --ignore-existing  ; mc version suspend provisioning/loki-admin; mc mb provisioning/tempo --ignore-existing  ; mc version suspend provisioning/tempo;
           echo "End Minio provisioning";
         env:
         - name: MINIO_SCHEME

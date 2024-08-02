@@ -205,14 +205,6 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         atscale.loki.gateway.image.tag:
           type: TAG
-    memcached:
-      properties:
-        atscale.loki.memcachedindexwrites.image.registry:
-          type: REGISTRY
-        atscale.loki.memcachedindexwrites.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        atscale.loki.memcachedindexwrites.image.tag:
-          type: TAG
     mimir:
       properties:
         atscale.mimir.mimir.image.registry:

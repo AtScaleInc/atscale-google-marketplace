@@ -11,3 +11,5 @@ config:
   sample_ratio: 0.1
   include_credential: true
 plugin: zipkin
+
+---
